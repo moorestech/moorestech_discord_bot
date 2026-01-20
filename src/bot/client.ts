@@ -4,7 +4,9 @@ import {
   Events,
   GatewayIntentBits,
   Interaction,
+  MessageFlags,
   PermissionsBitField,
+  ThreadChannel,
 } from "discord.js";
 import { config } from "../config";
 
@@ -99,7 +101,7 @@ client.on(Events.ThreadCreate, async (thread, newlyCreated) => {
       if (added >= maxToAdd) break;
 
       try {
-        await thread.members.add(member.id);
+        await addUserToThreadQuietly(thread, member.id);
         added++;
       } catch (err: unknown) {
         const error = err as { code?: number; message?: string };
@@ -139,6 +141,31 @@ client.on(Events.ThreadCreate, async (thread, newlyCreated) => {
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * 空投稿→編集でメンション→即削除でサイレントにスレッドへ追加
+ * 通知を出さずにメンバーをスレッドに参加させる非公式ワークアラウンド
+ */
+async function addUserToThreadQuietly(
+  thread: ThreadChannel,
+  userId: string
+): Promise<void> {
+  // 1) ゼロ幅スペースで空に近いメッセージを送信（誰もメンションしない）
+  const msg = await thread.send({
+    content: "\u200B",
+    allowedMentions: { parse: [] },
+    flags: MessageFlags.SuppressNotifications,
+  });
+
+  // 2) 編集でメンションを付与（編集はping通知が出にくい）
+  await msg.edit({
+    content: `<@${userId}>`,
+    allowedMentions: { users: [userId], parse: [] },
+  });
+
+  // 3) すぐ削除（スレッドの見た目を汚さない）
+  await msg.delete().catch(() => null);
 }
 
 export async function startBot(): Promise<void> {
