@@ -46,6 +46,11 @@ src/
 - 最小限のIntents（GatewayIntentBits.Guildsのみ）
 - GUILD_ID環境変数によるギルド固有/グローバルコマンド登録の切り替え
 
+## 機能追加時の注意
+
+- 新しい機能を追加した際は、必ず `/help-ja` と `/help-en` コマンドの内容も更新してください
+- ヘルプコマンドは `src/bot/events/interactionCreate.ts` で定義されています
+
 ## 環境変数
 
 必須:
