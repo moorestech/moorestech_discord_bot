@@ -4,6 +4,7 @@ const HELP_JA_MESSAGE = `**このボットの機能**
 
 • **tweetスレッドへの人の追加**
   新しいメンバーが参加すると、アクティブなtweetスレッドに自動追加されます
+  （メンションは参加用で、メンションの通知も行われません）
 
 • **hrでラインを作成**
   hrと入力すると区切り線を作成します
@@ -19,6 +20,7 @@ const HELP_EN_MESSAGE = `**Bot Features**
 
 • **Auto-add users to tweet threads**
   When new members join, they are automatically added to active tweet threads
+  (Mentions are for joining only; no notifications are sent)
 
 • **Create separator lines with hr**
   Type "hr" to create a separator line

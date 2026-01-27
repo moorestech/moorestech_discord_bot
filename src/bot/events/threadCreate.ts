@@ -20,6 +20,14 @@ const TARGET_FORUM_CHANNEL_IDS: string[] = [
  */
 const BATCH_SIZE = 10;
 
+/**
+ * ユーザー追加時に表示する説明メッセージ（日英併記）
+ */
+const ADD_USERS_EXPLANATION = `
+---
+このメンションはスレッドへの参加用です。メンションの通知も行われません。
+These mentions are for adding users to the thread. No notifications are sent.`;
+
 export function registerThreadCreateHandler(client: Client): void {
   client.on(Events.ThreadCreate, async (thread, newlyCreated) => {
     // 既存スレッドのキャッシュ読み込み等で発火したケースを避ける
@@ -112,11 +120,12 @@ export async function addUsersToThreadQuietly(
   existingMessage?: Message | null
 ): Promise<Message> {
   const mentions = userIds.map((id) => `<@${id}>`).join(" ");
+  const content = mentions + ADD_USERS_EXPLANATION;
 
   if (existingMessage) {
     // 既存メッセージを編集
     await existingMessage.edit({
-      content: mentions,
+      content,
       allowedMentions: { users: userIds, parse: [] },
     });
     return existingMessage;
@@ -130,7 +139,7 @@ export async function addUsersToThreadQuietly(
   });
 
   await msg.edit({
-    content: mentions,
+    content,
     allowedMentions: { users: userIds, parse: [] },
   });
 
